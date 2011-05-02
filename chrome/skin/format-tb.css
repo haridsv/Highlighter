@@ -26,3 +26,23 @@
 #highlighter-entry-lgrey  { list-style-image: url("chrome://highlighter/skin/menu/dot-lgray.png")  !important; }
 #highlighter-entry-dgrey  { list-style-image: url("chrome://highlighter/skin/menu/dot-dgray.png")  !important; }
 #highlighter-entry-clear  { list-style-image: url("chrome://highlighter/skin/menu/fmt-clear.png")  !important; } 
+
+#textcolorizer-toolbar-button
+{
+  list-style-image: url("chrome://highlighter/skin/toolbar/button-mini.png") !important;
+}
+
+#textcolorizer-toolbar-button[disabled]
+{
+  opacity: .4;
+  list-style-image: url("chrome://highlighter/skin/toolbar/button-disabled.png") !important;
+}
+
+#textcolorizer-entry-yellow { list-style-image: url("chrome://highlighter/skin/menu/square-yellow.png") !important; }
+#textcolorizer-entry-cyan   { list-style-image: url("chrome://highlighter/skin/menu/square-cyan.png")   !important; }
+#textcolorizer-entry-green  { list-style-image: url("chrome://highlighter/skin/menu/square-green.png")  !important; }
+#textcolorizer-entry-red    { list-style-image: url("chrome://highlighter/skin/menu/square-red.png")    !important; }
+#textcolorizer-entry-pink   { list-style-image: url("chrome://highlighter/skin/menu/square-pink.png")   !important; }
+#textcolorizer-entry-lgrey  { list-style-image: url("chrome://highlighter/skin/menu/square-lgray.png")  !important; }
+#textcolorizer-entry-dgrey  { list-style-image: url("chrome://highlighter/skin/menu/square-dgray.png")  !important; }
+#textcolorizer-entry-clear  { list-style-image: url("chrome://highlighter/skin/menu/fmt-clear.png")  !important; } 

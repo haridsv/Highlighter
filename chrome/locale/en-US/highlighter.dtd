@@ -2,7 +2,7 @@
 <!ENTITY highlighter.label "Highlighter">
 
 <!-- Tooltips -->
-<!ENTITY highlighter.mainTooltip "Highlight currently selected text with the last picked or the default colour.">
+<!ENTITY highlighter.mainTooltip "Highlight currently selected text with the last picked or the default color.">
 <!ENTITY highlighter.clearTooltip "Remove all the highlight from the current selection.">
 
 <!-- Colors -->
@@ -14,3 +14,20 @@
 <!ENTITY highlighter.labelLightGrey "Light gray">
 <!ENTITY highlighter.labelDarkGrey "Dark gray">
 <!ENTITY highlighter.labelClear "Clear">
+
+<!-- Main -->
+<!ENTITY textcolorizer.label "Text Color">
+
+<!-- Tooltips -->
+<!ENTITY textcolorizer.mainTooltip "Colorize currently selected text with the last picked or the default color.">
+<!ENTITY textcolorizer.clearTooltip "Remove the text color from the current selection.">
+
+<!-- Colors -->
+<!ENTITY textcolorizer.labelYellow "Yellow">
+<!ENTITY textcolorizer.labelCyan "Cyan">
+<!ENTITY textcolorizer.labelGreen "Green">
+<!ENTITY textcolorizer.labelRed "Red">
+<!ENTITY textcolorizer.labelPink "Pink">
+<!ENTITY textcolorizer.labelLightGrey "Light gray">
+<!ENTITY textcolorizer.labelDarkGrey "Dark gray">
+<!ENTITY textcolorizer.labelClear "Clear">

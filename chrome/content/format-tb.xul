@@ -26,5 +26,27 @@
         tooltiptext="&highlighter.clearTooltip;" />
     </menupopup>
     </toolbarbutton>
+
+    <toolbarbutton class="" type="menu-button"
+      id="textcolorizer-toolbar-button"
+      observes="cmd_renderedHTMLEnabler"
+      oncommand="textcolorizer.TextColorize()"
+      tooltiptext="&textcolorizer.mainTooltip;"
+      persist="curColor"
+    >
+    <menupopup>
+      <menuitem label="&textcolorizer.labelYellow;"      id="textcolorizer-entry-yellow" class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('yellow')" />
+      <menuitem label="&textcolorizer.labelCyan;"        id="textcolorizer-entry-cyan"   class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('cyan')" />
+      <menuitem label="&textcolorizer.labelGreen;"       id="textcolorizer-entry-green"  class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('green')" />
+      <menuitem label="&textcolorizer.labelRed;"         id="textcolorizer-entry-red"    class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('red')" />
+      <menuitem label="&textcolorizer.labelPink;"        id="textcolorizer-entry-pink"   class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('pink')" />
+      <menuseparator />
+      <menuitem label="&textcolorizer.labelLightGrey;"   id="textcolorizer-entry-lgrey"  class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('lgrey')" />
+      <menuitem label="&textcolorizer.labelDarkGrey;"    id="textcolorizer-entry-dgrey"  class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('dgrey')" />
+      <menuseparator />
+      <menuitem label="&textcolorizer.labelClear;"       id="textcolorizer-entry-clear"  class="menuitem-iconic" oncommand="textcolorizer.ClearFormat()"
+        tooltiptext="&textcolorizer.clearTooltip;" />
+    </menupopup>
+    </toolbarbutton>
   </toolbar>
 </overlay>
