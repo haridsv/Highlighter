@@ -8,7 +8,7 @@
     <toolbarbutton class="" type="menu-button"
       id="highlighter-toolbar-button"
       observes="cmd_renderedHTMLEnabler"
-      oncommand="highlighter.Highlight()"
+      oncommand="highlighter.Stylize()"
       tooltiptext="&highlighter.mainTooltip;"
       persist="curColor"
     >
@@ -30,7 +30,7 @@
     <toolbarbutton class="" type="menu-button"
       id="textcolorizer-toolbar-button"
       observes="cmd_renderedHTMLEnabler"
-      oncommand="textcolorizer.TextColorize()"
+      oncommand="textcolorizer.Stylize()"
       tooltiptext="&textcolorizer.mainTooltip;"
       persist="curColor"
     >
