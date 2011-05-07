@@ -62,45 +62,59 @@ var HLClass = function(id, styleName, iconDir)
             var selectionObj = htmlEditor.selection;
 
             // This returns the deepest container of the selection 
-            var selectedContainer = htmlEditor.getSelectionContainer();
+            var selectionContainer = htmlEditor.getSelectionContainer();
 
             // get the text selected from the selection object,
             var textSelected = selectionObj.toString();
 
-            if ( textSelected == '' && selectedContainer )
+	    dump('ClearFormat: textSelected: ' + textSelected + '\n');
+	    dump('ClearFormat: selectionContainer: ' + selectionContainer + '\n');
+            if ( textSelected == '' && selectionContainer )
             {
                 // If no text is selected, it means that the cursor is placed inside an already
                 // highlighted element, and we want to clear the form of this single element.
-                if ( selectedContainer.hasAttribute('style') )
+                if ( selectionContainer.hasAttribute('style') )
                 {
-                    var curStyle = selectedContainer.getAttribute("style");
-                    var newStyle = curStyle.replace(new RegExp(styleName+':[^;]+;', 'i'), '');
+		    dump('ClearFormat: selectionContainer has style attribute\n');
+                    var curStyle = selectionContainer.getAttribute("style");
+		    dump('ClearFormat: curStyle: ' + curStyle + '\n');
+                    var newStyle = curStyle.replace(new RegExp(styleName+':[^;]+;', 'ig'), '');
+		    dump('ClearFormat: newStyle: ' + newStyle + '\n');
 
-                    if ( newStyle.length > 3 || selectedContainer.nodeName != 'SPAN' )
+                    if ( newStyle.length > 3 || selectionContainer.nodeName != 'SPAN' )
                     {
-                        selectedContainer.setAttribute("style", newStyle);
+			dump('ClearFormat: calling setAttribute for style on selectionContainer\n');
+                        selectionContainer.setAttribute("style", newStyle);
                     }
                     else
                     {
                         // This is a span with no more style. To avoid pollute,
                         // remove the span itself. The span first child is a text
                         // node that contains it's value. Normally...
-                        if ( selectedContainer.firstChild )
-                            textSelected = selectedContainer.firstChild.nodeValue;
+                        if ( selectionContainer.firstChild )
+			{
+			    dump('ClearFormat: selecting firstChild nodeValue\n');
+                            textSelected = selectionContainer.firstChild.nodeValue;
+			}
                         else
-                            textSelected = selectedContainer.nodeValue;
+			{
+			    dump('ClearFormat: selecting nodeValue\n');
+                            textSelected = selectionContainer.nodeValue;
+			}
 
-                        htmlEditor.selectElement(selectedContainer);
+                        htmlEditor.selectElement(selectionContainer);
                         htmlEditor.insertHTML(textSelected, true);
                     }
                 }
             }
-            else if ( selectedContainer )
+            else if ( selectionContainer )
             {
                 // Recursively search for span with inline style,
                 // and remove the style
-                var nodeList = selectedContainer.childNodes;
+                var nodeList = selectionContainer.childNodes;
+		dump('ClearFormat: begin calling ApplyForChilds on childNodes: ' + nodeList + '\n');
                 self.ApplyForChilds(nodeList, selectionObj, self.ClearNodeStyle);
+		dump('ClearFormat: end calling ApplyForChilds on childNodes\n');
             }
         }
         catch ( e )
@@ -119,11 +133,13 @@ var HLClass = function(id, styleName, iconDir)
     */
     self.Stylize = function()
     {
+	dump('Stylize: called\n');
         try
         {
             // because the clear menu entry is inside the corresponding stylize
             // menu, this method is called just after clear.
             // this code is just here to avoid highligh again.
+	    //@JSD_BREAK 1
             if ( self.clearFormatCalled )
             {
                 self.clearFormatCalled = false;
@@ -135,22 +151,25 @@ var HLClass = function(id, styleName, iconDir)
                 var htmlEditor = domndEditor.getHTMLEditor(domndEditor.contentWindow);
 
                 // This returns the deepest container of the selection 
-                var selectedContainer = htmlEditor.getSelectionContainer();
+                var selectionContainer = htmlEditor.getSelectionContainer();
 
                 // The HTML editor.selection is in fact, an object, that is not anymore documented
                 // see the doc folder for details
                 var selectionObj = htmlEditor.selection;
 
-                var multipleSelection = self.IsSelectionMultiple() ;
-                var selectedNodes = selectedContainer.childNodes;
+                var multipleSelection = self.IsSelectionMultiple();
+                var selectedNodes = selectionContainer.childNodes;
                 var nbNodesSelected = self.CountSelectedNodes(selectedNodes, selectionObj, true);
+		dump('Stylize: nbNodesSelected ' + nbNodesSelected + '\n');
 
                 if ( nbNodesSelected == 0 )
                 {
                     // There is no node selected. so create an new one with the selection
                     if ( !multipleSelection )
                     {
+			dump('Stylize: being calling StylizeSimpleText' + '\n');
                         self.StylizeSimpleText();
+			dump('Stylize: end calling StylizeSimpleText' + '\n');
                     }
                     else
                     {
@@ -159,7 +178,9 @@ var HLClass = function(id, styleName, iconDir)
                 }
                 else
                 {
+		    dump('Stylize: begin calling ApplyForChilds with StylizeNode\n');
                     self.ApplyForChilds(selectedNodes, selectionObj, self.StylizeNode);
+		    dump('Stylize: end calling ApplyForChilds with StylizeNode\n');
                 }
             }
         }
@@ -177,19 +198,26 @@ var HLClass = function(id, styleName, iconDir)
     */
     self.StylizeSimpleText = function()
     {
+	dump('StylizeSimpleText: called' + '\n');
         // Get the editor object
         var domndEditor = document.getElementById("content-frame");
         var htmlEditor = domndEditor.getHTMLEditor(domndEditor.contentWindow);
         var textSelected = htmlEditor.selection;
-        var selectedContainer = htmlEditor.getSelectionContainer();
+        var selectionContainer = htmlEditor.getSelectionContainer();
 
 	var textStyle = self.GetNewStyleValue();
-        if ( textSelected == '' && selectedContainer )
+	dump('StylizeSimpleText: textStyle: ' + textStyle + '\n');
+	dump('StylizeSimpleText: textSelected: ' + textSelected + '\n');
+	dump('StylizeSimpleText: selectionContainer: ' + selectionContainer + '\n');
+        if ( textSelected == '' && selectionContainer )
         {
-	    if ( ! self.ClearNodeStyle(selectedContainer, textStyle) )
+	    dump('StylizeSimpleText: begin calling ClearNodeStyle' + '\n');
+	    if ( ! self.ClearNodeStyle(selectionContainer, textStyle) )
 	    {
-		selectedContainer.style = textStyle;
+		dump('StylizeSimpleText: setting style\n');
+		selectionContainer.style = textStyle;
             }
+	    dump('StylizeSimpleText: end calling ClearNodeStyle' + '\n');
         }
         else if ( textSelected != '' )
         {
@@ -203,18 +231,24 @@ var HLClass = function(id, styleName, iconDir)
             }
 
             // create the span that will contains the selection, and apply the style
+	    dump('StylizeSimpleText: creating a new span\n');
             var span = htmlEditor.createElementWithDefaults('span');
-            span.style = textStyle;
+	    dump('StylizeSimpleText: setting style on span\n');
+            span.setAttribute("style", textStyle);
 
             // create a text node with the selection, and append it to the span
+	    dump('StylizeSimpleText: creating a TextNode\n');
             var textNode = document.createTextNode(textString);
+	    dump('StylizeSimpleText: adding the TextNode as child to the span\n');
             span.appendChild(textNode);
 
             // var space = document.createTextNode(' ');
             // htmlEditor.insertElementAtSelection(space, false);
 
             // Replace the selection with the element, and select it again.
+	    dump('StylizeSimpleText: replacing original element with the span\n');
             htmlEditor.insertElementAtSelection(span, true);
+	    dump('StylizeSimpleText: restoring the selection\n');
             htmlEditor.selectElement(span);
         }
     };
@@ -229,10 +263,13 @@ var HLClass = function(id, styleName, iconDir)
 
         for ( var c=0 ; c < nodeList.length ; c++ )
         {
+	    dump('ApplyForChilds: Checking node: ' + c + '\n');
             var child = nodeList.item(c);
+	    dump('ApplyForChilds: child: ' + child + '\n');
 
             // The text of an element is always stored inside a child '#text' node
             var nodeText = child.firstChild ? child.firstChild.nodeValue : "" ;
+	    dump('ApplyForChilds: nodeText: ' + nodeText + '\n');
 
             var nodeInSel = false;
 
@@ -241,21 +278,27 @@ var HLClass = function(id, styleName, iconDir)
             // MDC documentation. It was in the XUL planet, however.
             if ( typeof(selectionObj.containsNode) != 'undefined' )
             {
+		dump('ApplyForChilds: selectionObj.containsNode: ' + selectionObj.containsNode + '\n');
                 var nodeType = child.nodeName.toLowerCase();
                 var partlySelected = exactSel.indexOf(nodeType) < 0;
 
                 try
                 {
+		    dump('ApplyForChilds: checking if node is in selection\n');
                     // the last parameters means also return true if the node is part of the selection only 
                     nodeInSel = selectionObj.containsNode(child, partlySelected);
                 }
                 catch ( exc )
                 {
+		    dump('ApplyForChilds: in catch block 1: ' + exc.message + '\n');
                     nodeInSel = ( selectionObj.toString().indexOf(nodeText) >= 0 );
                 }
             }
             else
+	    {
                 nodeInSel = ( selectionObj.toString().indexOf(nodeText) >= 0 );
+	    }
+	    dump('ApplyForChilds: nodeInSel: ' + nodeInSel + '\n');
 
             // The apply function can return a value indicating that we need to 
             // call recursively or not
@@ -263,13 +306,17 @@ var HLClass = function(id, styleName, iconDir)
 
             if ( nodeInSel )
             {
+		dump('ApplyForChilds: begin calling formatFunction on child: ' + child + '\n')
                 cont = formatFunction(child);
+		dump('ApplyForChilds: end calling formatFunction\n')
             }
 
             if ( cont && child.hasChildNodes() )
             {
+		dump('ApplyForChilds: begin calling ApplyForChilds on childNodes\n')
                 // Recursively apply the clear format to all nodes.
                 self.ApplyForChilds(child.childNodes, selectionObj, formatFunction);
+		dump('ApplyForChilds: end calling ApplyForChilds on childNodes\n')
             }
         }
     };
@@ -279,21 +326,25 @@ var HLClass = function(id, styleName, iconDir)
     */
     self.ClearNodeStyle = function(node, newStyleValue)
     {
+	dump('ClearNodeStyle: function called\n');
         if ( node.hasAttributes() && node.attributes.getNamedItem('style') )
         {
             // remove current background color, and apply the new one
             var style = node.attributes.getNamedItem('style');
+	    dump('ClearNodeStyle: current style: ' + style + '\n');
             var styleValue = style.nodeValue.replace(new RegExp(styleName+':[^;]+;', 'i'), '');
 	    if (newStyleValue) {
 		styleValue += newStyleValue;
 	    }
+	    dump('ClearNodeStyle: setting new style: ' + styleValue + '\n');
             style.nodeValue = styleValue;
 	    return 1;
         }
 	else if (newStyleValue && typeof(node.setAttribute) == 'function' )
 	{
+	    dump('ClearNodeStyle: setting style attribute to: ' + newStyleValue + '\n');
             // add a new style attribute
-            node.setAttribute("style", textStyleValue);
+            node.setAttribute("style", newStyleValue);
 	    return 1;
 	}
 	return 0;
@@ -484,8 +535,26 @@ var HLClass = function(id, styleName, iconDir)
     return self;
 };
 
-var highlighter = HLClass('highlighter', 'background-color', 'pens');
-var textcolorizer = HLClass('textcolorizer', 'color', 'colors');
+var highlighter = new HLClass('highlighter', 'background-color', 'pens');
+var textcolorizer = new HLClass('textcolorizer', 'color', 'colors');
+
+// Initialise the addon on start.
+window.addEventListener("load",
+    function(e)
+    {
+        if ( !highlighter.Initialised() )
+            highlighter.Initialise();
+    },
+    false);
+
+// Initialise the addon on start.
+window.addEventListener("unload",
+    function(e)
+    {
+        highlighter.Release();
+    },
+    false);
+
 
 // Initialise the addon on start.
 window.addEventListener("load",
