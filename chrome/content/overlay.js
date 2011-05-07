@@ -112,6 +112,11 @@ var HLClass = function(id, styleName, iconDir)
                 // Recursively search for span with inline style,
                 // and remove the style
                 var nodeList = selectionContainer.childNodes;
+                if (nodeList.length == 1 && nodeList[0].nodeName == '#text') {
+                    // When there is only one node and the selection is limited
+                    // to that node, you don't have access to the containing span.
+                    var nodeList = selectionObj.focusNode.childNodes;
+                }
                 dump('ClearFormat: begin calling ApplyForChilds on childNodes: ' + nodeList + '\n');
                 self.ApplyForChilds(nodeList, selectionObj, self.ClearNodeStyle);
                 dump('ClearFormat: end calling ApplyForChilds on childNodes\n');
@@ -259,7 +264,7 @@ var HLClass = function(id, styleName, iconDir)
     {
         // for these markups, we need to format the element
         // only when it is fully selected.
-        var exactSel = "div,table,td,th".split(',');
+        var exactSel = "div,table,td,th,#text".split(',');
 
         for ( var c=0 ; c < nodeList.length ; c++ )
         {
@@ -268,7 +273,7 @@ var HLClass = function(id, styleName, iconDir)
             dump('ApplyForChilds: child: ' + child + '\n');
 
             // The text of an element is always stored inside a child '#text' node
-            var nodeText = child.firstChild ? child.firstChild.nodeValue : "" ;
+            var nodeText = child.firstChild ? child.firstChild.nodeValue : (child.nodeValue ? child.nodeValue : "") ;
             dump('ApplyForChilds: nodeText: ' + nodeText + '\n');
 
             var nodeInSel = false;
