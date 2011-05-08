@@ -22,7 +22,7 @@
       <menuitem label="&highlighter.labelLightGrey;"   id="highlighter-entry-lgrey"  class="menuitem-iconic" oncommand="highlighter.SetCurColor('lgrey')" />
       <menuitem label="&highlighter.labelDarkGrey;"    id="highlighter-entry-dgrey"  class="menuitem-iconic" oncommand="highlighter.SetCurColor('dgrey')" />
       <menuseparator />
-      <menuitem label="&highlighter.labelClear;"       id="highlighter-entry-clear"  class="menuitem-iconic" oncommand="highlighter.ClearFormat()"
+      <menuitem label="&highlighter.labelClear;"       id="highlighter-entry-clear"  class="menuitem-iconic" oncommand="highlighter.ClearStyle()"
         tooltiptext="&highlighter.clearTooltip;" />
     </menupopup>
     </toolbarbutton>
@@ -44,7 +44,7 @@
       <menuitem label="&textcolorizer.labelLightGrey;"   id="textcolorizer-entry-lgrey"  class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('lgrey')" />
       <menuitem label="&textcolorizer.labelDarkGrey;"    id="textcolorizer-entry-dgrey"  class="menuitem-iconic" oncommand="textcolorizer.SetCurColor('dgrey')" />
       <menuseparator />
-      <menuitem label="&textcolorizer.labelClear;"       id="textcolorizer-entry-clear"  class="menuitem-iconic" oncommand="textcolorizer.ClearFormat()"
+      <menuitem label="&textcolorizer.labelClear;"       id="textcolorizer-entry-clear"  class="menuitem-iconic" oncommand="textcolorizer.ClearStyle()"
         tooltiptext="&textcolorizer.clearTooltip;" />
     </menupopup>
     </toolbarbutton>

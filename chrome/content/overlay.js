@@ -1,37 +1,41 @@
 /*
  * Highlighter package for thunderbird
  * Author: André Rodier. <andre.rodier@gmail.com>
+ * Author: Hari Krishna Dara <haridara@gmail.com>
  * License: GPL 3.0
  */
 
 var HLClass = function(id, styleName, iconDir)
 {
-    var self = this;
+    // These are available via closure, but are not accessible during debugging, so add as members.
+    this.id = id;
+    this.styleName = styleName;
+    this.iconDir = iconDir;
 
     // the name of the last selected color in the format toolbar
-    self.curColor = '';
+    this.curColor = '';
 
     // True only after the first initialisation.
-    self.initialised = false;
+    this.initialised = false;
 
     // Todo
-    self.clearFormatCalled = false;
+    this.clearFormatCalled = false;
 
     // Each color name is translated in a html code color value
-    self.realColors = {};
+    this.realColors = {};
 
     // The number of currently selected nodes
-    self.NbSelectedNodes = 0;
+    this.NbSelectedNodes = 0;
 
     /* Select the next color to use for the next call to the Stylize function
     */
-    self.SetCurColor = function(color)
+    this.SetCurColor = function(color)
     {
         try
         {
             if ( typeof(color) != "undefined" )
             {
-                self.curColor = color;
+                this.curColor = color;
 
                 // TODO: find a way to use only one icon. Actually, the icon should exists
                 // in the pens folder...
@@ -49,7 +53,7 @@ var HLClass = function(id, styleName, iconDir)
 
     /* Clear the format of the current selection.
     */
-    self.ClearFormat = function()
+    this.ClearStyle = function()
     {
         try
         {
@@ -67,38 +71,38 @@ var HLClass = function(id, styleName, iconDir)
             // get the text selected from the selection object,
             var textSelected = selectionObj.toString();
 
-            dump('ClearFormat: textSelected: ' + textSelected + '\n');
-            dump('ClearFormat: selectionContainer: ' + selectionContainer + '\n');
+            dump('ClearStyle: textSelected: ' + textSelected + '\n');
+            dump('ClearStyle: selectionContainer: ' + selectionContainer + '\n');
             if ( textSelected == '' && selectionContainer )
             {
                 // If no text is selected, it means that the cursor is placed inside an already
                 // highlighted element, and we want to clear the form of this single element.
                 if ( selectionContainer.hasAttribute('style') )
                 {
-                    dump('ClearFormat: selectionContainer has style attribute\n');
+                    dump('ClearStyle: selectionContainer has style attribute\n');
                     var curStyle = selectionContainer.getAttribute("style");
-                    dump('ClearFormat: curStyle: ' + curStyle + '\n');
+                    dump('ClearStyle: curStyle: ' + curStyle + '\n');
                     var newStyle = curStyle.replace(new RegExp(styleName+':[^;]+;', 'ig'), '');
-                    dump('ClearFormat: newStyle: ' + newStyle + '\n');
+                    dump('ClearStyle: newStyle: ' + newStyle + '\n');
 
                     if ( newStyle.length > 3 || selectionContainer.nodeName != 'SPAN' )
                     {
-                        dump('ClearFormat: calling setAttribute for style on selectionContainer\n');
+                        dump('ClearStyle: calling setAttribute for style on selectionContainer\n');
                         selectionContainer.setAttribute("style", newStyle);
                     }
                     else
                     {
                         // This is a span with no more style. To avoid pollute,
-                        // remove the span itself. The span first child is a text
+                        // remove the span itthis. The span first child is a text
                         // node that contains it's value. Normally...
                         if ( selectionContainer.firstChild )
                         {
-                            dump('ClearFormat: selecting firstChild nodeValue\n');
+                            dump('ClearStyle: selecting firstChild nodeValue\n');
                             textSelected = selectionContainer.firstChild.nodeValue;
                         }
                         else
                         {
-                            dump('ClearFormat: selecting nodeValue\n');
+                            dump('ClearStyle: selecting nodeValue\n');
                             textSelected = selectionContainer.nodeValue;
                         }
 
@@ -117,26 +121,26 @@ var HLClass = function(id, styleName, iconDir)
                     // to that node, you don't have access to the containing span.
                     var nodeList = selectionObj.focusNode.childNodes;
                 }
-                dump('ClearFormat: begin calling ApplyForChilds on childNodes: ' + nodeList + '\n');
-                self.ApplyForChilds(nodeList, selectionObj, self.ClearNodeStyle);
-                dump('ClearFormat: end calling ApplyForChilds on childNodes\n');
+                dump('ClearStyle: begin calling ApplyForChilds on childNodes: ' + nodeList + '\n');
+                this.ApplyForChilds(nodeList, selectionObj, this.ClearNodeStyle);
+                dump('ClearStyle: end calling ApplyForChilds on childNodes\n');
             }
         }
         catch ( e )
         {
-            var msg = id+".ClearFormat: "+e.message;
+            var msg = id+".ClearStyle: "+e.message;
             Components.utils.reportError(msg); 
         }
 
         // This is necessary because due to event propagation,
         // the Stylize function is going to be called.
-        self.clearFormatCalled = true;
+        this.clearFormatCalled = true;
     };
 
     /* This method is called just after selection (SetCurColor),
     *  or when directly clicking the corresponding stylize icon
     */
-    self.Stylize = function()
+    this.Stylize = function()
     {
         dump('Stylize: called\n');
         try
@@ -145,9 +149,9 @@ var HLClass = function(id, styleName, iconDir)
             // menu, this method is called just after clear.
             // this code is just here to avoid highligh again.
             //@JSD_BREAK 1
-            if ( self.clearFormatCalled )
+            if ( this.clearFormatCalled )
             {
-                self.clearFormatCalled = false;
+                this.clearFormatCalled = false;
             }
             else
             {
@@ -162,9 +166,9 @@ var HLClass = function(id, styleName, iconDir)
                 // see the doc folder for details
                 var selectionObj = htmlEditor.selection;
 
-                var multipleSelection = self.IsSelectionMultiple();
+                var multipleSelection = this.IsSelectionMultiple();
                 var selectedNodes = selectionContainer.childNodes;
-                var nbNodesSelected = self.CountSelectedNodes(selectedNodes, selectionObj, true);
+                var nbNodesSelected = this.CountSelectedNodes(selectedNodes, selectionObj, true);
                 dump('Stylize: nbNodesSelected ' + nbNodesSelected + '\n');
 
                 if ( nbNodesSelected == 0 )
@@ -173,7 +177,7 @@ var HLClass = function(id, styleName, iconDir)
                     if ( !multipleSelection )
                     {
                         dump('Stylize: being calling StylizeSimpleText' + '\n');
-                        self.StylizeSimpleText();
+                        this.StylizeSimpleText();
                         dump('Stylize: end calling StylizeSimpleText' + '\n');
                     }
                     else
@@ -184,7 +188,7 @@ var HLClass = function(id, styleName, iconDir)
                 else
                 {
                     dump('Stylize: begin calling ApplyForChilds with StylizeNode\n');
-                    self.ApplyForChilds(selectedNodes, selectionObj, self.StylizeNode);
+                    this.ApplyForChilds(selectedNodes, selectionObj, this.StylizeNode);
                     dump('Stylize: end calling ApplyForChilds with StylizeNode\n');
                 }
             }
@@ -201,7 +205,7 @@ var HLClass = function(id, styleName, iconDir)
     /* Create a new text node with the currently selected text,
     * and replace the selection with the new node.
     */
-    self.StylizeSimpleText = function()
+    this.StylizeSimpleText = function()
     {
         dump('StylizeSimpleText: called' + '\n');
         // Get the editor object
@@ -210,14 +214,14 @@ var HLClass = function(id, styleName, iconDir)
         var textSelected = htmlEditor.selection;
         var selectionContainer = htmlEditor.getSelectionContainer();
 
-        var textStyle = self.GetNewStyleValue();
+        var textStyle = this.GetNewStyleValue();
         dump('StylizeSimpleText: textStyle: ' + textStyle + '\n');
         dump('StylizeSimpleText: textSelected: ' + textSelected + '\n');
         dump('StylizeSimpleText: selectionContainer: ' + selectionContainer + '\n');
         if ( textSelected == '' && selectionContainer )
         {
             dump('StylizeSimpleText: begin calling ClearNodeStyle' + '\n');
-            if ( ! self.ClearNodeStyle(selectionContainer, textStyle) )
+            if ( ! this.ClearNodeStyle(selectionContainer, textStyle) )
             {
                 dump('StylizeSimpleText: setting style\n');
                 selectionContainer.style = textStyle;
@@ -260,7 +264,7 @@ var HLClass = function(id, styleName, iconDir)
 
     /* Recursively apply a style on a list of selected nodes
     */
-    self.ApplyForChilds = function(nodeList, selectionObj, formatFunction)
+    this.ApplyForChilds = function(nodeList, selectionObj, formatFunction)
     {
         // for these markups, we need to format the element
         // only when it is fully selected.
@@ -320,7 +324,7 @@ var HLClass = function(id, styleName, iconDir)
             {
                 dump('ApplyForChilds: begin calling ApplyForChilds on childNodes\n')
                 // Recursively apply the clear format to all nodes.
-                self.ApplyForChilds(child.childNodes, selectionObj, formatFunction);
+                this.ApplyForChilds(child.childNodes, selectionObj, formatFunction);
                 dump('ApplyForChilds: end calling ApplyForChilds on childNodes\n')
             }
         }
@@ -329,7 +333,7 @@ var HLClass = function(id, styleName, iconDir)
     /* Remove the current style from a node and optionally add a new one. Return 0 if no
     * style was found.
     */
-    self.ClearNodeStyle = function(node, newStyleValue)
+    this.ClearNodeStyle = function(node, newStyleValue)
     {
         dump('ClearNodeStyle: function called\n');
         if ( node.hasAttributes() && node.attributes.getNamedItem('style') )
@@ -355,24 +359,24 @@ var HLClass = function(id, styleName, iconDir)
         return 0;
     };
 
-    self.GetNewStyleValue = function()
+    this.GetNewStyleValue = function()
     {
         // Get the real color from the last picked color
-        var realColor = self.GetRealColor(self.curColor);
+        var realColor = this.GetRealColor(this.curColor);
         return ";"+styleName+":"+realColor+' !important;';
     };
 
     /* Stylize one node only, with the currently selected color
     */
-    self.StylizeNode = function(node)
+    this.StylizeNode = function(node)
     {
         // we'll return a boolean indicating that we have applied a style on the node,
         // so we don't need to apply it again recursively ?
         var cont = true;
 
-        var textStyle = self.GetNewStyleValue();
+        var textStyle = this.GetNewStyleValue();
         // Attempt to remove current style, and apply the new one
-        if ( self.ClearNodeStyle(node, textStyle) )
+        if ( this.ClearNodeStyle(node, textStyle) )
         {
             if ( node.childNodes.length == 1 && node.childNodes[0].nodeName == '#text' )
                 cont = false;
@@ -406,9 +410,9 @@ var HLClass = function(id, styleName, iconDir)
 
     /* Recursively crawl a node, and return the number of nodes that are part of the selection
     */
-    self.CountSelectedNodes = function(nodeList, selectionObj, reset)
+    this.CountSelectedNodes = function(nodeList, selectionObj, reset)
     {
-        if ( reset ) self.NbSelectedNodes = 0;
+        if ( reset ) this.NbSelectedNodes = 0;
 
         for ( var c=0 ; c < nodeList.length ; c++ )
         {
@@ -436,25 +440,25 @@ var HLClass = function(id, styleName, iconDir)
                 }
 
                 if (nodeInSel)
-                    self.NbSelectedNodes++;
+                    this.NbSelectedNodes++;
             }
 
             if ( child.hasChildNodes() )
             {
                 // Recursively search for selected nodes in the child
-                self.CountSelectedNodes(child.childNodes, selectionObj, false);
+                this.CountSelectedNodes(child.childNodes, selectionObj, false);
             }
         }
 
-        return self.NbSelectedNodes;
+        return this.NbSelectedNodes;
     };
 
     /* Return the real HTML color from a color name,
     */
-    self.GetRealColor = function(colorName)
+    this.GetRealColor = function(colorName)
     {
         // var baseNode = htmlEditor.createElementWithDefaults('span');
-        var realColor = self.realColors[colorName];
+        var realColor = this.realColors[colorName];
 
         // if there is no real color, use the same color as the one provided.
         // however, this is not guarantee to work all the time. In the future,
@@ -468,7 +472,7 @@ var HLClass = function(id, styleName, iconDir)
     /* Return true or false, according to the fact that multiple
        elements have been selected in the editor.
     */
-    self.IsSelectionMultiple = function()
+    this.IsSelectionMultiple = function()
     {
         var isMultiple = false;
 
@@ -494,28 +498,28 @@ var HLClass = function(id, styleName, iconDir)
 
     /* Initialise: list of colors, etc.
     */
-    self.Initialise = function()
+    this.Initialise = function()
     {
         try
         {
             // Create the list of colors
-            self.realColors['yellow']    = '#ff6';
-            self.realColors['cyan']      = '#aff';
-            self.realColors['green']     = '#9f9';
-            self.realColors['pink']      = '#f6f';
-            self.realColors['red']       = '#f99';
+            this.realColors['yellow']    = '#ff6';
+            this.realColors['cyan']      = '#aff';
+            this.realColors['green']     = '#9f9';
+            this.realColors['pink']      = '#f6f';
+            this.realColors['red']       = '#f99';
 
             // Useful for B&W printing
-            self.realColors['lgrey']     = '#ccc';
-            self.realColors['dgrey']     = '#999';
+            this.realColors['lgrey']     = '#ccc';
+            this.realColors['dgrey']     = '#999';
 
             // initialise the default color.
             // TODO: implement persistency
             var curColor = "yellow";
-            self.SetCurColor(curColor);
+            this.SetCurColor(curColor);
 
             // Finished
-            self.initialised = true;
+            this.initialised = true;
         }
         catch (e)
         {
@@ -526,18 +530,16 @@ var HLClass = function(id, styleName, iconDir)
 
     /* Release all resources, and exit the plugin
     */
-    self.Release = function()
+    this.Release = function()
     {
     };
 
     /* Return true if already initialized or false.
     */
-    self.Initialised = function()
+    this.Initialised = function()
     {
-        return self.initialised;
+        return this.initialised;
     };
-
-    return self;
 };
 
 var highlighter = new HLClass('highlighter', 'background-color', 'pens');
